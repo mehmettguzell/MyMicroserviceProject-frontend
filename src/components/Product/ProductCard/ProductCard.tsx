@@ -14,7 +14,7 @@ export type Product = {
 type ProductCardProps = {
   product: Product;
   onClick?: () => void;
-  // onAddToCart?: () => void;
+  onAddToCart?: () => void;
 };
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -24,19 +24,20 @@ export default function ProductCard({ product }: { product: Product }) {
     router.push(`/product/${product.id}`);
   };
 
-  // const handleAddToCart = (e: React.MouseEvent) => {
-  //   e.stopPropagation();
-  //   console.log(`Added ${product.name} to cart`);
-  // };
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // router.push(`/product/${product.id}`);
+  };
 
   return (
     <div className={styles.productCard} onClick={handleClick}>
       {product.image && <img src={product.image} alt={product.name} className={styles.productImage} />}
       <h3 className={styles.productName}>{product.name}</h3>
+      <p className={styles.productDescription}>{product.description}</p>
       <p className={styles.productPrice}>${product.price}</p>
-      {/* <button className={styles.addToCartBtn} onClick={handleAddToCart}>
-        Add to Cart
-      </button> */}
+      <button className={styles.addToCartBtn} onClick={handleAddToCart}>
+        Order
+      </button>
     </div>
   );
 }

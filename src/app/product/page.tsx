@@ -154,7 +154,6 @@ try {
           <ProductCard key={product.id} product={product} />
         ))}
 
-        {/* Extra box for adding a new product */}
         <div
           onClick={() => setShowAddForm(true)}
           style={{
