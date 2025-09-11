@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { getAllProducts, searchProduct } from "@/services/productService";
+import { getAllProducts, searchProduct, addProduct } from "@/services/productService";
 import ProductCard, { Product } from "@/components/Product/ProductCard/ProductCard";
 
 export default function ProductPage() {
@@ -10,6 +10,13 @@ export default function ProductPage() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    description: "",
+    price: "",
+  });
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -33,7 +40,6 @@ export default function ProductPage() {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!query.trim()) {
       setFilteredProducts(products);
       return;
@@ -53,6 +59,31 @@ export default function ProductPage() {
     }
   };
 
+  const handleAddProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!newProduct.name || !newProduct.price) {
+      alert("Name and price are required");
+      return;
+    }
+try {
+    const addedProduct = await addProduct({
+      name: newProduct.name,
+      description: newProduct.description,
+      price: Number(newProduct.price),
+    });
+
+    setProducts([addedProduct, ...products]);
+    setFilteredProducts([addedProduct, ...filteredProducts]);
+
+    setNewProduct({ name: "", description: "", price: "" });
+    setShowAddForm(false);
+  } catch (err) {
+    console.error("Add product failed:", err);
+    alert("Failed to add product.");
+  }
+};
+
   return (
     <div style={{ padding: "2rem" }}>
       <form onSubmit={handleSearch} style={{ marginBottom: "1.5rem" }}>
@@ -68,6 +99,48 @@ export default function ProductPage() {
         </button>
       </form>
 
+      {showAddForm && (
+        <form
+          onSubmit={handleAddProduct}
+          style={{
+            marginBottom: "1.5rem",
+            padding: "1rem",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            display: "flex",
+            gap: "1rem",
+            flexWrap: "wrap",
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Name"
+            value={newProduct.name}
+            onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Description"
+            value={newProduct.description}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, description: e.target.value })
+            }
+          />
+          <input
+            type="number"
+            placeholder="Price"
+            value={newProduct.price}
+            onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+            required
+          />
+          <button type="submit">Add Product</button>
+          <button type="button" onClick={() => setShowAddForm(false)}>
+            Cancel
+          </button>
+        </form>
+      )}
+
       {loading && <p>Loading...</p>}
 
       <div
@@ -80,6 +153,24 @@ export default function ProductPage() {
         {filteredProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
+
+        {/* Extra box for adding a new product */}
+        <div
+          onClick={() => setShowAddForm(true)}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "200px",
+            border: "2px dashed #ccc",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "2rem",
+            color: "#555",
+          }}
+        >
+          +
+        </div>
       </div>
 
       {!loading && filteredProducts.length === 0 && query && <p>No products found.</p>}
