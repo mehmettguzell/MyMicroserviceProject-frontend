@@ -1,21 +1,21 @@
-import {getAllProdcuts} from "@/services/productService";
-import ProductList from "@/components/productList";
-
+import { getAllProducts } from "@/services/productService";
+import ProductCard from '@/components/ProductCard/ProductCard';
 
 export default async function ProductPage() {
+  const products = await getAllProducts();
 
-    const products = await getAllProdcuts();
-
-    return (
-    <div>
-      <h1>Products</h1>
-      <ul>
+  return (
+    <div style={{ padding: '2rem' }}>
+      <h1 style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>Products</h1>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+        gap: '1.5rem'
+      }}>
         {products.map((product: any) => (
-          <li key={product.id}>
-            {product.name} - ${product.price}
-          </li>
+          <ProductCard key={product.id} product={product} />
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
