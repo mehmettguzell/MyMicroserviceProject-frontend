@@ -3,11 +3,17 @@
 import { useRouter } from 'next/navigation';
 import styles from './ProductCard.module.css';
 
-type Product = {
+export type Product = {
   id: number;
   name: string;
   price: number;
   image?: string;
+};
+
+type ProductCardProps = {
+  product: Product;
+  onClick?: () => void;
+  // onAddToCart?: () => void;
 };
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -17,19 +23,19 @@ export default function ProductCard({ product }: { product: Product }) {
     router.push(`/product/${product.id}`);
   };
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    console.log(`Added ${product.name} to cart`);
-  };
+  // const handleAddToCart = (e: React.MouseEvent) => {
+  //   e.stopPropagation();
+  //   console.log(`Added ${product.name} to cart`);
+  // };
 
   return (
     <div className={styles.productCard} onClick={handleClick}>
       {product.image && <img src={product.image} alt={product.name} className={styles.productImage} />}
       <h3 className={styles.productName}>{product.name}</h3>
       <p className={styles.productPrice}>${product.price}</p>
-      <button className={styles.addToCartBtn} onClick={handleAddToCart}>
+      {/* <button className={styles.addToCartBtn} onClick={handleAddToCart}>
         Add to Cart
-      </button>
+      </button> */}
     </div>
   );
 }

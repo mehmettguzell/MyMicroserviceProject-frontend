@@ -1,41 +1,57 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getAllProducts, searchProducts } from "@/services/productService";
-import ProductCard from "@/components/Product/ProductCard/ProductCard";
+import { useState, useEffect, useCallback } from "react";
+import { getAllProducts, searchProduct } from "@/services/productService";
+import ProductCard, { Product } from "@/components/Product/ProductCard/ProductCard";
 
 export default function ProductPage() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchProducts() {
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
       const data = await getAllProducts();
       setProducts(data);
       setFilteredProducts(data);
+    } catch (err) {
+      console.error("Fetch products error:", err);
+      setError("Failed to fetch products.");
+    } finally {
+      setLoading(false);
     }
-    fetchProducts();
   }, []);
 
-  async function handleSearch(e: React.FormEvent) {
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query) {
+
+    if (!query.trim()) {
       setFilteredProducts(products);
       return;
     }
 
     setLoading(true);
+    setError(null);
+
     try {
-      const results = await searchProducts(query);
+      const results = await searchProduct(query);
       setFilteredProducts(results);
     } catch (err) {
       console.error("Search error:", err);
+      setError("Search failed.");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div style={{ padding: "2rem" }}>
