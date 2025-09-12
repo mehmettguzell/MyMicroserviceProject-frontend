@@ -45,6 +45,7 @@ useEffect(() => {
       await updateProduct(product.id, {
         name: product.name,
         description: product.description,
+        skuCode: product.skuCode,
         price: Number(product.price),
       });
       alert("Product updated successfully!");
@@ -62,7 +63,7 @@ useEffect(() => {
     try {
       await deleteProduct(product.id);
       alert("Product deleted successfully!");
-      router.push("/product"); // artık doğru çalışacak
+      router.push("/product");
     } catch (err) {
       console.error(err);
       alert("Failed to delete product.");
@@ -71,7 +72,7 @@ useEffect(() => {
 
 if (loading) return <p>Loading...</p>;
 if (error) return <p>{error}</p>;
-if (!product) return null; // Product null ise render etmiyoruz
+if (!product) return null;
 
   return (
   <div style={{ padding: "2rem" }}>
@@ -89,6 +90,16 @@ if (!product) return null; // Product null ise render etmiyoruz
         Price:
         <input type="number" name="price" value={product.price} onChange={handleChange} style={{ width: "100%", padding: "0.5rem" }} required />
       </label>
+      {/* <label>
+        Quantity:
+        <input type="number" name="quantity" value={inventory.quantity} onChange={handleChange} style={{ width: "100%", padding: "0.5rem" }} required />
+      </label> */}
+
+      <label>
+        skuCode:
+        <input type="text" name="skuCode" value={product.skuCode} onChange={handleChange} style={{ width: "100%", padding: "0.5rem" }} required />
+      </label>
+
       <button type="submit" style={{ padding: "0.75rem", backgroundColor: "#0070f3", color: "white", border: "none", borderRadius: "5px" }}>
         Submit
       </button>

@@ -15,6 +15,7 @@ export default function ProductPage() {
   const [newProduct, setNewProduct] = useState({
     name: "",
     description: "",
+    skuCode: "",
     price: "",
   });
 
@@ -66,19 +67,21 @@ export default function ProductPage() {
       alert("Name and price are required");
       return;
     }
-try {
-    const addedProduct = await addProduct({
-      name: newProduct.name,
-      description: newProduct.description,
-      price: Number(newProduct.price),
-    });
 
-    setProducts([addedProduct, ...products]);
-    setFilteredProducts([addedProduct, ...filteredProducts]);
 
-    setNewProduct({ name: "", description: "", price: "" });
-    setShowAddForm(false);
-  } catch (err) {
+    try{
+        const addedProduct = await addProduct({
+        name: newProduct.name,
+        description: newProduct.description,
+        skuCode: newProduct.skuCode,
+        price: Number(newProduct.price),
+      });
+      setProducts([addedProduct, ...products]);
+      setFilteredProducts([addedProduct, ...filteredProducts]);
+
+      setNewProduct({ name: "", description: "", price: "", skuCode: "" });
+      setShowAddForm(false);
+  }catch (err) {
     console.error("Add product failed:", err);
     alert("Failed to add product.");
   }
@@ -121,6 +124,13 @@ try {
           />
           <input
             type="text"
+            placeholder="SkuCode"
+            value={newProduct.skuCode}
+            onChange={(e) => setNewProduct({ ...newProduct, skuCode: e.target.value })}
+            required
+          />
+          <input
+            type="text"
             placeholder="Description"
             value={newProduct.description}
             onChange={(e) =>
@@ -154,6 +164,7 @@ try {
           <ProductCard key={product.id} product={product} />
         ))}
 
+        {/* Extra box for adding a new product */}
         <div
           onClick={() => setShowAddForm(true)}
           style={{
